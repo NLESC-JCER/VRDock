@@ -1,0 +1,20 @@
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: ./ops/Dockerfile
+      args:
+          - application_endpoint=${APPLICATION_ENDPOINT}
+          - frontend_port=${FRONTEND_PORT}
+          - backend_port=${BACKEND_PORT}
+          - host=${HOST}
+          - backend_endpoint=${BACKEND_ENDPOINT}
+    ports:
+      - "${FRONTEND_PORT}:${FRONTEND_PORT}"
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: ./ops/Dockerfile
+    ports:
+      - "${BACKEND_PORT}:8888"

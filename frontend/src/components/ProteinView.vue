@@ -2,10 +2,10 @@
 
 import { ref, onMounted } from 'vue'
 
-import { OrbitControls } from '../../node_modules/three/examples/jsm/controls/OrbitControls.js';
-import { XRButton } from '../../node_modules/three/examples/jsm/webxr/XRButton.js';
-import { OBJLoader } from '../../node_modules/three/examples/jsm/loaders/OBJLoader.js';
-import { XRControllerModelFactory } from '../../node_modules/three/examples/jsm/webxr/XRControllerModelFactory.js';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { XRButton } from 'three/examples/jsm/webxr/XRButton.js';
+import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
+import { XRControllerModelFactory } from 'three/examples/jsm/webxr/XRControllerModelFactory.js';
 import { PerspectiveCamera,
          Scene,
          WebGLRenderer,
@@ -27,7 +27,7 @@ import { PerspectiveCamera,
 import oneak4_1 from '../assets/models/1ak4_1.obj'
 import oneak4_2 from '../assets/models/1ak4_2.obj'
 
-const socket = new WebSocket('ws://localhost:8888/ws');
+const socket = new WebSocket(import.meta.env.VITE_BACKEND_WEBSOCKET_URL?import.meta.env.VITE_BACKEND_WEBSOCKET_URL:"ws://localhost:8888");
 
 const container = ref<HTMLDivElement>()
 const renderCanvas = ref<HTMLCanvasElement>()
@@ -46,6 +46,7 @@ let controls : OrbitControls, group : Group;
 let score;
 
 onMounted(()=>{
+  console.log(import.meta.env)
   init();
   renderer.setAnimationLoop( render );
 })
@@ -67,7 +68,7 @@ function init() {
   camera = new PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 0.1, 10 );
   camera.position.set( 0, 1.6, 3 );
 
-  controls = new OrbitControls( camera, renderCanvas.value );
+  controls = new OrbitControls( camera, renderCanvas.value as HTMLCanvasElement );
   controls.target.set( 0, 1.6, 0 );
   controls.update();
 
@@ -104,8 +105,10 @@ function init() {
   loader1.load(
     oneak4_1,
     function ( object : Object3D ) {
+      let baseColor = Math.random() * 0xffffff
+
       const material = new MeshStandardMaterial( {
-        color: Math.random() * 0xffffff,
+        color: baseColor,
         roughness: 0.7,
         metalness: 0.0
       } );
@@ -116,12 +119,11 @@ function init() {
           child.castShadow = true;
           child.receiveShadow = true;
           child.name = 'chain1';
-
-                          child.position.y = 1.6;
-                          child.position.z = -2.0;
-          }
-        } 
-      );
+          child.position.y = 1.6;
+          child.position.z = -2.0;
+          child.userData['baseColor'] = baseColor
+        }
+      });
 
       object.traverse( function(child) {
         if ( child instanceof Mesh ) {
@@ -206,14 +208,18 @@ function init() {
   // listen to backend
   socket.addEventListener('message', 
     function (event) {
-      const time = new Date().getTime();
+      //const time = new Date().getTime();
       const parsedData = JSON.parse(event.data);
       const eventType = parsedData.type;
 
       if (eventType === 'score') {
+
         score = parsedData.data;
-        console.log('score' + score)
-        // render();
+        let name = parsedData.name;
+        let obj = group.children.find((obj)=>obj.userData.name == name) as Mesh
+        (obj.material as MeshStandardMaterial).color.r = 1;
+        (obj.material as MeshStandardMaterial).color.g = score/10;
+        (obj.material as MeshStandardMaterial).color.b = score/10;
       }
     }
   )

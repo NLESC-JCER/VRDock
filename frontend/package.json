@@ -14,10 +14,12 @@
     "vue": "^3.4.31"
   },
   "devDependencies": {
+    "@types/node": "^22.0.0",
     "@types/three": "^0.166.0",
     "@vitejs/plugin-basic-ssl": "^1.1.0",
     "@vitejs/plugin-vue": "^5.0.5",
     "typescript": "^5.2.2",
+    "unplugin-obj": "^0.1.2",
     "vite": "^5.3.4",
     "vue-tsc": "^2.0.24"
   }

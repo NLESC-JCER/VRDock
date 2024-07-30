@@ -5,13 +5,6 @@ import asyncio
 from typing import Any
 from tornado import websocket, web, ioloop, httputil
 
-
-
-class IndexHandler(web.RequestHandler):
-    def get(self):
-        self.render("index.html")
-
-
 class SocketHandler(websocket.WebSocketHandler):
 
     def __init__(self, application: tornado.web.Application, request: httputil.HTTPServerRequest,
@@ -24,7 +17,7 @@ class SocketHandler(websocket.WebSocketHandler):
     def on_message(self, message):
         decoded_message = json.loads(message)
         print('message', decoded_message)
-        self.write_message(json.dumps({'type': 'score', 'data': decoded_message['pos']['x']}))
+        self.write_message(json.dumps({'type': 'score', 'data': decoded_message['pos']['x'], 'name':decoded_message['name']}))
 
     def open(self):
         print('ws open')
@@ -34,7 +27,6 @@ class SocketHandler(websocket.WebSocketHandler):
 
 
 app = web.Application([
-    (r'/', IndexHandler),
     (r'/ws', SocketHandler),
     # (r'/(favicon.ico)', web.StaticFileHandler, {'path': '../'}),
     # (r'/(rest_api_example.png)', web.StaticFileHandler, {'path': './'}),
