@@ -15,7 +15,7 @@ ARG backend_port
 ARG backend_endpoint
 
 ENV APPLICATION_ENDPOINT=${application_endpoint}
-ENV VITE_BACKEND_WEBSOCKET_URL=ws://${host}:${backend_port}${application_endpoint}${backend_endpoint}
+ENV VITE_BACKEND_WEBSOCKET_URL=wss://${host}:${backend_port}${application_endpoint}${backend_endpoint}
 
 WORKDIR /app
 COPY ./ .
