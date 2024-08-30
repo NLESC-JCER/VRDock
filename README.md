@@ -1,11 +1,25 @@
 # VRDock
-Docking proteins in VR with the help of ML models
 
-launch the backend
+Docking proteins in VR with the help of ML models.
+
+## Setup for development or to test the application
+
+Launch the backend:
 
 ```python
-python server.py
+python ./backend/server.py
 ```
 
-serve `vrdock.html` within vscode 
+Launch the front-end:
 
+```
+cd frontend
+npm install
+npm run dev
+```
+
+Then open the given url in your browser.
+
+## Setup for deployment with Docker
+
+**Work in progress**
